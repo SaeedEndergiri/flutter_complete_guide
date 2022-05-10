@@ -1,46 +1,85 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
+import 'quiz.dart';
+import 'result.dart';
+
+void main() => runApp(MyApp());
+
+class MyApp extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return _MyAppState();
+  }
 }
 
-class MyApp extends StatelessWidget {
-  var questionIndex = 0;
-  const MyApp({Key? key}) : super(key: key);
+class _MyAppState extends State<MyApp> {
+  final _questions = const [
+    {
+      'question': 'What\'s your favorite color?',
+      'answers': [
+        {'text': 'Black', 'score': 10},
+        {'text': 'Red', 'score': 5},
+        {'text': 'Green', 'score': 2},
+        {'text': 'White', 'score': 1}
+      ]
+    },
+    {
+      'question': 'What\'s your favorite animal?',
+      'answers': [
+        {'text': 'Cat', 'score': 4},
+        {'text': 'Dog', 'score': 3},
+        {'text': 'Rabbit', 'score': 5},
+        {'text': 'Horse', 'score': 2}
+      ]
+    },
+    {
+      'question': 'Who\'s your favorite instructor?',
+      'answers': [
+        {'text': 'Saeed', 'score': 3},
+        {'text': 'Abdullah', 'score': 1},
+        {'text': 'Malik', 'score': 6},
+        {'text': 'Saif', 'score': 5}
+      ]
+    },
+  ];
+  var _questionIndex = 0;
+  var _totalScore = 0;
 
-  void answerQuestion() {
-    print('Answer Chosen!');
+  void _resetQuiz() {
+    setState(() {
+      _questionIndex = 0;
+      _totalScore = 0;
+    });
+  }
+
+  void _answerQuestion(int score) {
+    _totalScore += score;
+    setState(() {
+      _questionIndex++;
+    });
+    if (_questionIndex < _questions.length) {
+      print('We have more questions!');
+    } else {
+      print('No more questions!');
+    }
+    print(_questionIndex);
   }
 
   // This widget is the root of the application
   @override
   Widget build(BuildContext context) {
-    var questions = [
-      'What\'s your favorite color?',
-      'What\'s your favorite animal?'
-    ];
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Hello Flutter'),
+          title: Text('Hello Flutter'),
         ),
-        body: Column(children: [
-          Text(questions[0]),
-          ElevatedButton(
-            onPressed: () => print('Answer 1 chosen!'),
-            child: const Text('Answer 1'),
-          ),
-          ElevatedButton(
-            onPressed: () => print('Answer 2 chosen!'),
-            child: const Text('Answer 2'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              print('Answer 3 chosen!');
-            },
-            child: const Text('Answer 3'),
-          ),
-        ]),
+        body: _questionIndex < _questions.length
+            ? Quiz(
+                answerQuestion: _answerQuestion,
+                questionIndex: _questionIndex,
+                questions: _questions,
+              )
+            : Result(_totalScore, _resetQuiz),
       ),
     );
   }
